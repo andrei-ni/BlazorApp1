@@ -1,0 +1,46 @@
+﻿@inject IProductService ProductService
+
+
+<hr />
+<EditForm Model="productById" OnValidSubmit="EditProduct">
+
+    <div class="mb-0">
+        <label for="name">Nume</label>
+        <InputText @bind-Value="@productById.Name" class="form-control" />
+    </div>
+
+    <div class="mb-0">
+        <label for="name">Descriere</label>
+        <InputTextArea @bind-Value="@productById.Description" style="min-height: 100px" class="form-range bg-light" />
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-2"> Edit product </button>
+</EditForm>
+<br/>
+@if (!string.IsNullOrEmpty(message))
+{
+    <span class="text-danger">@message </span>
+}
+<hr />
+
+@code {
+    [Parameter]
+    public int Id { get; set; } 
+
+    Product productById = new();
+
+    private string message = "";
+
+    protected override async Task OnParametersSetAsync()
+    {
+        productById = await ProductService.GetProductByIdAsync(Id);
+
+    }
+    async void EditProduct()
+    {
+        await ProductService.UpdateProductAsync(productById);
+        message = "Product edited";
+        await InvokeAsync(StateHasChanged);
+
+    }
+}

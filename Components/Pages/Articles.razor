@@ -1,0 +1,47 @@
+﻿@page "/articles"
+
+<br />
+<br />
+<div class="article-list" style="max-height: 200px; overflow-y: auto" @onwheel="LoadMoreArticles">
+
+    @foreach (var x in displayedArticles)
+    {
+        <span>@x</span>
+        <br />
+    }
+</div>
+<br />
+
+@code {
+    [Parameter]
+    public string pageUrl { get; set; } = null; // it breaks the website, css doesn't load.
+
+    private List<string> articles = new();
+    private List<string> displayedArticles = new();
+    private int displayCount = 10;
+
+    protected override void OnInitialized()
+    {
+        //pageUrl = "articles";
+        for (var i = 0; i <= 100; i++)
+        {
+            articles.Add($"{i}. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.");
+        }
+        displayedArticles = articles.Take(displayCount).ToList();
+    }
+
+    // protected override async Task OnAfterRenderAsync(bool firstRender)
+    // {
+
+    // }
+
+    private void LoadMoreArticles()
+    {
+        var currentCount = displayedArticles.Count;
+        var nextCount = Math.Min(currentCount + 1, articles.Count); // Load 1 article at a time
+                                                                    //var nextCount = Math.Min(currentCount + displayCount, articles.Count); // Load displayCount.Count articles at a time
+
+        // Load 1 article at a time when scrolling
+        displayedArticles.AddRange(articles.Skip(currentCount).Take(nextCount - currentCount));
+    }
+}

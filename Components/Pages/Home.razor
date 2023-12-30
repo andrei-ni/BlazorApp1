@@ -1,0 +1,33 @@
+﻿@page "/"
+@inject IJSRuntime _js
+
+<PageTitle>Home</PageTitle>
+
+
+<TestComponent Title="From Home Page" Message="Home page text" />
+
+
+<img src="/rocket.png" class="bgimage" />
+<div class="space">
+    <!-- The space background -->
+</div>
+
+
+
+<div class="home_text">
+
+    <h1><i><b>NEVER GIVE UP</b></i></h1>
+    <h1><i>ON YOUR DREAMS</i></h1>
+    <span>Welcome to your new app.</span>
+
+</div>
+
+@code{
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await _js.InvokeVoidAsync("createStars", 150);
+
+        //await _js.InvokeAsync<string>("showModal");
+    }
+}

@@ -1,0 +1,84 @@
+﻿@page "/products"
+@inject IProductService ProductService
+
+
+<h1>Products</h1>
+
+<h5>Add new product</h5>
+<EditForm Model="newProduct" OnValidSubmit="AddProduct">
+
+    <div class="mb-0">
+                <label for="name">Name</label>
+    <InputText @bind-Value="@newProduct.Name" class="form-control" />
+    </div>
+
+    <div class="mb-0">
+        <label for="name">Description</label>
+        <InputTextArea @bind-Value="@newProduct.Description" style="min-height: 100px" class="form-range bg-light" />
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-2"> Add product </button>
+</EditForm>
+
+<br />
+@if (ProductService.Message != string.Empty)
+{
+    <span class="text-info">@ProductService.Message</span>
+}
+<br />
+
+<br/>
+@foreach(var p in allProducts)
+{
+    <span>@p.Name - @p.Description &emsp;</span> 
+
+    <span class="text-success" type="button" @onclick="()=>OpenEditProduct(p)"> Edit &ensp; </span>
+    <span class="text-danger" type="button" @onclick="()=> DeleteProduct(p.Id)"> Delete </span>
+
+    @if (show && selectedProductId == p.Id)
+    {
+        <EditProductComponent Id="p.Id"/>
+    }
+    <br/>
+}
+
+<br />
+
+@code {
+    Product newProduct = new();
+    List<Product> allProducts = new();
+
+
+    private bool show = false;
+    private int selectedProductId;
+    private string message = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        allProducts = await ProductService.GetAllProductsAsync();
+    }
+
+    async void AddProduct()
+    {
+        await ProductService.CreateProductAsync(newProduct);
+        newProduct = new();
+        //message = "Product added";
+        await InvokeAsync(StateHasChanged);
+    }
+
+    void OpenEditProduct(Product product)
+    {
+        show = !show;
+        selectedProductId = product.Id;
+    }
+
+
+    async void DeleteProduct(int id)
+    {
+        await ProductService.DeleteProductAsync(id);
+        message = "Product deleted";
+        await InvokeAsync(StateHasChanged);
+
+    }
+
+}
